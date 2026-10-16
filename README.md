@@ -84,6 +84,8 @@ All endpoints under `/api`. Bodies validated with Zod (`400` on invalid input).
 | GET | `/leads/:id` | ✔ | `404` if missing **or owned by another user** |
 | PATCH | `/leads/:id` | ✔ | partial update, same ownership rule |
 | DELETE | `/leads/:id` | ✔ | `204`, same ownership rule |
+| GET | `/leads/:id/conversations` | ✔ | conversations + messages for the lead (owner only) |
+| POST | `/leads/:id/messages` | ✔ | `{role: client\|user\|assistant, content}` → `201` + message |
 
 Auth is a JWT in an httpOnly cookie (`plas_session`, 7 days). Passwords hashed with bcrypt (10 rounds). Every lead query is scoped by `user_id` — users can never see each other's leads.
 

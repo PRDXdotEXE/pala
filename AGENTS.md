@@ -65,9 +65,10 @@ Enums: `lead_status` (new…lost), `priority` (low/medium/high), `message_role` 
 - [x] Phase 3 — Database (4 tables, enums, FKs, migrations from scratch)
 - [x] Phase 4 — Authentication (register/login/logout/me, JWT cookie, bcrypt, user scoping)
 - [x] Phase 5 — Lead CRUD (list/create/get/patch/delete, ownership enforced, 14-test suite)
-- [ ] Phase 6 — Conversation intake + AI extraction
-- [ ] Phase 7 — Review/correction UI
-- [ ] Phase 8 — Follow-up generation / proposals
+- [x] Phase 6 — CRM frontend (dashboard, leads list with filters, lead detail/edit/delete, conversation panel)
+- [ ] Phase 7 — Conversation intake + AI extraction
+- [ ] Phase 8 — Review/correction UI
+- [ ] Phase 9 — Follow-up generation / proposals
 
 ## Hacktoberfest note
 
