@@ -135,6 +135,45 @@ describe('auth + lead authorization', () => {
     expect(res.body.leads).toEqual([]);
   });
 
+  it('User A can post and read messages on Lead A', async () => {
+    const posted = await request(app)
+      .post(`/api/leads/${leadId}/messages`)
+      .set('Cookie', cookieA)
+      .send({ role: 'client', content: 'I need a restaurant website.' });
+    expect(posted.status).toBe(201);
+    expect(posted.body.message.role).toBe('client');
+
+    const read = await request(app)
+      .get(`/api/leads/${leadId}/conversations`)
+      .set('Cookie', cookieA);
+    expect(read.status).toBe(200);
+    expect(read.body.conversations.length).toBeGreaterThan(0);
+    expect(read.body.conversations[0].messages[0].content).toBe(
+      'I need a restaurant website.',
+    );
+  });
+
+  it('User B cannot read or post messages on Lead A', async () => {
+    const read = await request(app)
+      .get(`/api/leads/${leadId}/conversations`)
+      .set('Cookie', cookieB);
+    expect(read.status).toBe(404);
+
+    const post = await request(app)
+      .post(`/api/leads/${leadId}/messages`)
+      .set('Cookie', cookieB)
+      .send({ role: 'user', content: 'let me in' });
+    expect(post.status).toBe(404);
+  });
+
+  it('invalid message payload returns 400', async () => {
+    const res = await request(app)
+      .post(`/api/leads/${leadId}/messages`)
+      .set('Cookie', cookieA)
+      .send({ role: 'narrator', content: '' });
+    expect(res.status).toBe(400);
+  });
+
   it('User A reads, updates, and deletes Lead A (CRUD)', async () => {
     const read = await request(app)
       .get(`/api/leads/${leadId}`)

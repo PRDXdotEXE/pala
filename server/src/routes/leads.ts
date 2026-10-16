@@ -1,7 +1,9 @@
 import { Router } from 'express';
+import * as conversationController from '../controllers/conversation.controller';
 import * as leadsController from '../controllers/leads.controller';
 import { requireAuth } from '../middleware/auth';
 import { validate } from '../middleware/validate';
+import { addMessageSchema } from '../schemas/conversation.schema';
 import { createLeadSchema, updateLeadSchema } from '../schemas/lead.schema';
 
 export function createLeadsRouter(): Router {
@@ -9,6 +11,8 @@ export function createLeadsRouter(): Router {
   router.use(requireAuth);
   router.get('/', leadsController.list);
   router.post('/', validate(createLeadSchema), leadsController.create);
+  router.get('/:id/conversations', conversationController.list);
+  router.post('/:id/messages', validate(addMessageSchema), conversationController.add);
   router.get('/:id', leadsController.get);
   router.patch('/:id', validate(updateLeadSchema), leadsController.update);
   router.delete('/:id', leadsController.remove);
