@@ -45,9 +45,12 @@ Server-only equivalents: `npm run dev -w server`, etc.
 - AI access only through the `AiProvider` interface — no direct Ollama calls in routes/services.
 - Express apps are built by `createApp(ai)` so tests can inject mocks.
 - Business logic lives in `services/`; controllers stay thin; routes only declare paths.
+- **Every lead query MUST be scoped by `user_id`** (the non-negotiable authz rule): use `and(eq(leads.id, …), eq(leads.userId, req.user.id))`. Missing-lead and other-user's-lead both return `404`.
+- Input validation with Zod via `middleware/validate.ts`; schemas live in `src/schemas/`.
+- Auth: JWT (`plas_session` httpOnly cookie) verified in `middleware/auth.ts` (`requireAuth`); bcrypt for password hashes; `services/auth.service.ts`.
 - Schema changes: edit `db/schema.ts` → `db:generate` → `db:migrate` (never hand-edit SQL migrations).
 - No secrets in git: `.env` is ignored; use `.env.example` for documentation.
-- Server runtime target: Node 22, CommonJS output.
+- Server runtime target: Node 22. tsconfig may get rewritten to `Node16` by tooling — code must typecheck under both `CommonJS` and `Node16` resolution (avoid dynamic `import()` of relative paths).
 
 ## Database
 
@@ -60,10 +63,11 @@ Enums: `lead_status` (new…lost), `priority` (low/medium/high), `message_role` 
 - [x] Phase 1 — Project setup (client, server, db, Ollama, tests, docs)
 - [x] Phase 2 — Backend architecture (route → controller → service → db flow)
 - [x] Phase 3 — Database (4 tables, enums, FKs, migrations from scratch)
-- [ ] Phase 4 — Conversation intake + AI extraction
-- [ ] Phase 5 — Review/correction UI
-- [ ] Phase 6 — Follow-up generation
-- [ ] Phase 7 — Proposals (later)
+- [x] Phase 4 — Authentication (register/login/logout/me, JWT cookie, bcrypt, user scoping)
+- [x] Phase 5 — Lead CRUD (list/create/get/patch/delete, ownership enforced, 14-test suite)
+- [ ] Phase 6 — Conversation intake + AI extraction
+- [ ] Phase 7 — Review/correction UI
+- [ ] Phase 8 — Follow-up generation / proposals
 
 ## Hacktoberfest note
 

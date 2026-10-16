@@ -11,6 +11,7 @@ const envSchema = z.object({
   OLLAMA_HOST: z.url().default('http://localhost:11434'),
   OLLAMA_MODEL: z.string().min(1).default('qwen2.5:1.5b'),
   AI_PROVIDER: z.enum(['ollama']).default('ollama'),
+  JWT_SECRET: z.string().min(16),
 });
 
 export type Env = z.infer<typeof envSchema>;

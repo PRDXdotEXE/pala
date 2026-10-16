@@ -69,6 +69,24 @@ HTTP request → route → controller → service → database / external → re
 
 Routes only declare paths, controllers stay thin, services hold business logic — see `AGENTS.md`.
 
+## API
+
+All endpoints under `/api`. Bodies validated with Zod (`400` on invalid input).
+
+| Method | Path | Auth | Notes |
+| --- | --- | --- | --- |
+| POST | `/auth/register` | — | `{name, email, password≥8}` → `201` + session cookie |
+| POST | `/auth/login` | — | `{email, password}` → session cookie |
+| POST | `/auth/logout` | — | clears session cookie |
+| GET | `/auth/me` | ✔ | current user, `401` without session |
+| GET | `/leads` | ✔ | current user's leads only |
+| POST | `/leads` | ✔ | create lead (`clientName` required, rest optional) |
+| GET | `/leads/:id` | ✔ | `404` if missing **or owned by another user** |
+| PATCH | `/leads/:id` | ✔ | partial update, same ownership rule |
+| DELETE | `/leads/:id` | ✔ | `204`, same ownership rule |
+
+Auth is a JWT in an httpOnly cookie (`plas_session`, 7 days). Passwords hashed with bcrypt (10 rounds). Every lead query is scoped by `user_id` — users can never see each other's leads.
+
 ## Environment variables
 
 Set in `.env` at the repo root (server loads it; see `.env.example`):
@@ -80,6 +98,7 @@ Set in `.env` at the repo root (server loads it; see `.env.example`):
 | `OLLAMA_HOST` | `http://localhost:11434` | Ollama API base URL |
 | `OLLAMA_MODEL` | `qwen2.5:1.5b` | Model tag for generation |
 | `AI_PROVIDER` | `ollama` | Provider selected via factory |
+| `JWT_SECRET` | — (required) | Signs auth session cookies (min 16 chars) |
 
 ## Architecture notes
 
