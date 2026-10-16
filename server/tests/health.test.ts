@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { createApp } from '../src/app';
-import type { AiHealthStatus, AiProvider } from '../src/ai/provider';
+import type { AiHealthStatus, AiProvider } from '../src/services/ai/provider';
 
 class MockAiProvider implements AiProvider {
   readonly name = 'mock';

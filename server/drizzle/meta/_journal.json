@@ -8,6 +8,13 @@
       "when": 1792122312892,
       "tag": "0000_colossal_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792131204556,
+      "tag": "0001_bouncy_nekra",
+      "breakpoints": true
     }
   ]
 }

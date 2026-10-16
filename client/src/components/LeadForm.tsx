@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import type { Lead, LeadPayload, LeadStatus, Priority } from '../types';
+import type { LeadPayload, LeadStatus, Priority } from '../types';
+import { ui } from '../lib/ui';
 
 interface FormState {
   clientName: string;
@@ -44,7 +45,7 @@ function emptyState(): FormState {
   };
 }
 
-function fromLead(lead: Lead): FormState {
+function fromLead(lead: LeadPayload): FormState {
   return {
     clientName: lead.clientName,
     company: lead.company ?? '',
@@ -74,9 +75,8 @@ function parseNumber(value: string): number | null {
   return Number.isFinite(parsed) ? Math.trunc(parsed) : null;
 }
 
-const inputClass =
-  'w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
-const labelClass = 'block text-sm font-medium text-gray-700';
+const inputClass = ui.input;
+const labelClass = ui.label;
 
 export function LeadForm({
   initial,
@@ -84,7 +84,7 @@ export function LeadForm({
   onSubmit,
   onError,
 }: {
-  initial?: Lead;
+  initial?: LeadPayload;
   submitLabel: string;
   onSubmit: (payload: LeadPayload) => Promise<unknown>;
   onError?: (message: string) => void;
@@ -145,7 +145,7 @@ export function LeadForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {localError && (
-        <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className={ui.inputError} role="alert">
           {localError}
         </p>
       )}
@@ -301,7 +301,7 @@ export function LeadForm({
       <button
         type="submit"
         disabled={busy}
-        className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+        className={ui.btnPrimaryLg}
       >
         {busy ? 'Saving…' : submitLabel}
       </button>

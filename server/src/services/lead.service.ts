@@ -1,14 +1,53 @@
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, gte, ilike, lt, or, type SQL } from 'drizzle-orm';
 import { db } from '../db/client';
 import { leads } from '../db/schema';
 import { HttpError } from '../utils/http-error';
-import type { CreateLeadInput, UpdateLeadInput } from '../schemas/lead.schema';
+import type {
+  CreateLeadInput,
+  ListLeadsQuery,
+  UpdateLeadInput,
+} from '../schemas/lead.schema';
 
-export async function listLeads(userId: string) {
+function localDayStart(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function followUpCondition(followUp: NonNullable<ListLeadsQuery['followUp']>): SQL {
+  const today = localDayStart(new Date());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  switch (followUp) {
+    case 'today':
+      return and(gte(leads.nextFollowUp, today), lt(leads.nextFollowUp, tomorrow)) as SQL;
+    case 'overdue':
+      return lt(leads.nextFollowUp, today) as SQL;
+    case 'upcoming':
+      return gte(leads.nextFollowUp, tomorrow) as SQL;
+  }
+}
+
+export async function listLeads(userId: string, filters: ListLeadsQuery = {}) {
+  const conditions: SQL[] = [eq(leads.userId, userId)];
+
+  if (filters.q) {
+    const pattern = `%${filters.q}%`;
+    conditions.push(
+      or(
+        ilike(leads.clientName, pattern),
+        ilike(leads.company, pattern),
+        ilike(leads.project, pattern),
+      ) as SQL,
+    );
+  }
+  if (filters.status) conditions.push(eq(leads.status, filters.status));
+  if (filters.priority) conditions.push(eq(leads.priority, filters.priority));
+  if (filters.followUp) conditions.push(followUpCondition(filters.followUp));
+
   return db
     .select()
     .from(leads)
-    .where(eq(leads.userId, userId))
+    .where(and(...conditions))
     .orderBy(desc(leads.createdAt));
 }
 

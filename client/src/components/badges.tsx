@@ -1,25 +1,31 @@
 import type { LeadStatus, MessageRole, Priority } from '../types';
 
 const STATUS_STYLES: Record<LeadStatus, string> = {
-  new: 'bg-gray-100 text-gray-700',
-  contacted: 'bg-blue-100 text-blue-700',
-  interested: 'bg-violet-100 text-violet-700',
-  proposal_sent: 'bg-amber-100 text-amber-800',
-  negotiating: 'bg-orange-100 text-orange-700',
-  converted: 'bg-green-100 text-green-700',
-  lost: 'bg-red-100 text-red-700',
+  new: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  contacted:
+    'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+  interested:
+    'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
+  proposal_sent:
+    'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
+  negotiating:
+    'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300',
+  converted:
+    'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300',
+  lost: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
 };
 
 const PRIORITY_STYLES: Record<Priority, string> = {
-  low: 'bg-gray-100 text-gray-600',
-  medium: 'bg-blue-100 text-blue-700',
-  high: 'bg-red-100 text-red-700',
+  low: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+  medium: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+  high: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
 };
 
 const ROLE_STYLES: Record<MessageRole, string> = {
-  client: 'bg-blue-100 text-blue-700',
-  user: 'bg-green-100 text-green-700',
-  assistant: 'bg-violet-100 text-violet-700',
+  client: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+  user: 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300',
+  assistant:
+    'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
 };
 
 const ROLE_LABELS: Record<MessageRole, string> = {

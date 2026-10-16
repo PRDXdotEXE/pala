@@ -6,3 +6,5 @@ export const addMessageSchema = z.object({
 });
 
 export type AddMessageInput = z.infer<typeof addMessageSchema>;
+
+export const createConversationSchema = z.object({});

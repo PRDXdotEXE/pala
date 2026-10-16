@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import type { AiProvider } from '../ai/provider';
+import type { AiProvider } from '../services/ai/provider';
 import { createHealthController } from '../controllers/health.controller';
 
 export function createHealthRouter(ai: AiProvider): Router {

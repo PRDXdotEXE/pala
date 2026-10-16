@@ -31,5 +31,16 @@ export const createLeadSchema = z.object({
 
 export const updateLeadSchema = createLeadSchema.partial();
 
+export const listLeadsQuerySchema = z.object({
+  q: z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.string().trim().min(1).max(200).optional(),
+  ),
+  status: z.enum(leadStatusValues).optional(),
+  priority: z.enum(priorityValues).optional(),
+  followUp: z.enum(['today', 'overdue', 'upcoming']).optional(),
+});
+
 export type CreateLeadInput = z.infer<typeof createLeadSchema>;
 export type UpdateLeadInput = z.infer<typeof updateLeadSchema>;
+export type ListLeadsQuery = z.infer<typeof listLeadsQuerySchema>;

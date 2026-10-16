@@ -36,14 +36,21 @@ export function formatMoney(amount: number, currency: string): string {
   }
 }
 
-export function formatBudget(lead: Lead): string {
-  const { budgetMin, budgetMax, currency } = lead;
+export function formatBudgetRange(
+  budgetMin: number | null,
+  budgetMax: number | null,
+  currency: string,
+): string {
   if (budgetMin == null && budgetMax == null) return '—';
   if (budgetMin != null && budgetMax != null) {
     if (budgetMin === budgetMax) return formatMoney(budgetMin, currency);
     return `${formatMoney(budgetMin, currency)} – ${formatMoney(budgetMax, currency)}`;
   }
   return formatMoney(budgetMin ?? budgetMax ?? 0, currency);
+}
+
+export function formatBudget(lead: Lead): string {
+  return formatBudgetRange(lead.budgetMin, lead.budgetMax, lead.currency);
 }
 
 export function isToday(value: string | null | undefined): boolean {

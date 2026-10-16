@@ -5,7 +5,7 @@ import { Navigate, Link, useLocation, useNavigate } from 'react-router-dom';
 import { fetchMe, login, register } from '../api/auth';
 
 const inputClass =
-  'w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
+  'w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100';
 
 export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const queryClient = useQueryClient();
@@ -37,23 +37,23 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h1 className="mb-1 text-lg font-bold text-gray-900">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 dark:bg-gray-950">
+      <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <h1 className="mb-1 text-lg font-bold text-gray-900 dark:text-gray-100">
           {mode === 'login' ? 'Sign in' : 'Create account'}
         </h1>
-        <p className="mb-4 text-sm text-gray-500">
+        <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
           {mode === 'login' ? (
             <>
               No account?{' '}
-              <Link className="text-blue-600 hover:underline" to="/register">
+              <Link className="text-blue-600 hover:underline dark:text-blue-400" to="/register">
                 Register
               </Link>
             </>
           ) : (
             <>
               Already registered?{' '}
-              <Link className="text-blue-600 hover:underline" to="/login">
+              <Link className="text-blue-600 hover:underline dark:text-blue-400" to="/login">
                 Sign in
               </Link>
             </>
@@ -63,7 +63,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         <form onSubmit={handleSubmit} className="space-y-3">
           {mode === 'register' && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="name">
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="name">
                 Name
               </label>
               <input
@@ -76,7 +76,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
             </div>
           )}
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="email">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="email">
               Email
             </label>
             <input
@@ -89,7 +89,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="password">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="password">
               Password
             </label>
             <input
@@ -104,7 +104,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
           </div>
 
           {authMutation.isError && (
-            <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
               {authMutation.error instanceof Error
                 ? authMutation.error.message
                 : 'Authentication failed'}

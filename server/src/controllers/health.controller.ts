@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import type { AiProvider } from '../ai/provider';
+import type { AiProvider } from '../services/ai/provider';
 import { getHealthStatus } from '../services/health.service';
 
 export function createHealthController(ai: AiProvider) {

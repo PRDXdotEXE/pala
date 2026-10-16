@@ -1,5 +1,19 @@
-# Optional containerized dependencies. The default local workflow uses the
-# host Postgres and host Ollama (see README), so this file is not required.
+# Development environment: React (Vite) + Express + PostgreSQL.
+#
+#   docker compose up --build
+#     client → http://localhost:5173
+#     server → http://localhost:3001
+#     db     → localhost:5432
+#
+# Ollama is intentionally NOT started by default: model runtime and GPU setup
+# depend on the host (see "Ollama setup" in the README). Point the server at a
+# host-installed Ollama with OLLAMA_HOST, or opt in with:
+#
+#   docker compose --profile ollama up -d
+#
+# Secrets come from .env at the repo root when present; the defaults below are
+# for local development only.
+
 services:
   db:
     image: postgres:16-alpine
@@ -17,8 +31,55 @@ services:
       timeout: 3s
       retries: 10
 
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://lead:lead_dev_password@db:5432/lead_assistant
+      PORT: "3001"
+      JWT_SECRET: ${JWT_SECRET:-docker_dev_secret_change_me_0123456789}
+      AI_PROVIDER: ollama
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:1.5b}
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+    ports:
+      - "3001:3001"
+    volumes:
+      # Hot reload: only the source tree is mounted over the image.
+      - ./server/src:/app/server/src
+      - ./server/tests:/app/server/tests
+    depends_on:
+      db:
+        condition: service_healthy
+    # Apply migrations before the watch server takes requests.
+    command: sh -c "npm run db:migrate -w server && npm run dev -w server"
+    extra_hosts:
+      # Lets the container reach Ollama on the host (Linux Engine; Docker
+      # Desktop already resolves this name).
+      - "host.docker.internal:host-gateway"
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: client
+    environment:
+      VITE_API_PROXY: http://server:3001
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client/src:/app/client/src
+    depends_on:
+      - server
+
+  # Opt-in: `docker compose --profile ollama up -d` runs Ollama in a container.
+  # For NVIDIA GPUs use ollama/ollama with the nvidia runtime and
+  # `docker exec <container> ollama pull qwen2.5:1.5b` instead.
   ollama:
     image: ollama/ollama:latest
+    profiles: ["ollama"]
     ports:
       - "11434:11434"
     volumes:

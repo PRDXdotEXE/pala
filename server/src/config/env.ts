@@ -12,6 +12,8 @@ const envSchema = z.object({
   OLLAMA_MODEL: z.string().min(1).default('qwen2.5:1.5b'),
   AI_PROVIDER: z.enum(['ollama']).default('ollama'),
   JWT_SECRET: z.string().min(16),
+  /** Exact origin allowed cross-origin (set only when the client is hosted separately). */
+  CORS_ORIGIN: z.url().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

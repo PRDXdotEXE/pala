@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
+import type { ListLeadsQuery } from '../schemas/lead.schema';
 import * as leadService from '../services/lead.service';
 import { parseUuidOr404 } from '../utils/uuid';
 
@@ -18,7 +19,8 @@ export async function list(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const leads = await leadService.listLeads(userId(req));
+    const filters = req.query as unknown as ListLeadsQuery;
+    const leads = await leadService.listLeads(userId(req), filters);
     res.json({ leads });
   } catch (err) {
     next(err);

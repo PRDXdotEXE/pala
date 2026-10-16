@@ -1,5 +1,5 @@
 import { createApp } from './app';
-import { createAiProvider } from './ai';
+import { createAiProvider } from './services/ai';
 import { env } from './config/env';
 
 const app = createApp(createAiProvider());

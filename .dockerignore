@@ -1,0 +1,12 @@
+.git
+node_modules
+**/node_modules
+client/dist
+server/dist
+**/dist
+.env
+.env.local
+*.log
+coverage
+**/*.tsbuildinfo
+.vite

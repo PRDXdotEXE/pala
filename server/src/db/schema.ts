@@ -82,6 +82,26 @@ export const messages = pgTable(
   (table) => [index('messages_conversation_id_idx').on(table.conversationId)],
 );
 
+export const proposals = pgTable(
+  'proposals',
+  {
+    id,
+    leadId: uuid('lead_id')
+      .notNull()
+      .references(() => leads.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    projectOverview: text('project_overview').notNull(),
+    scope: text('scope').array().notNull(),
+    deliverables: text('deliverables').array().notNull(),
+    timeline: text('timeline').array().notNull(),
+    pricing: text('pricing').notNull(),
+    nextSteps: text('next_steps').notNull(),
+    createdAt,
+    updatedAt,
+  },
+  (table) => [index('proposals_lead_id_idx').on(table.leadId)],
+);
+
 export const usersRelations = relations(users, ({ many }) => ({
   leads: many(leads),
 }));
@@ -92,6 +112,7 @@ export const leadsRelations = relations(leads, ({ one, many }) => ({
     references: [users.id],
   }),
   conversations: many(conversations),
+  proposals: many(proposals),
 }));
 
 export const conversationsRelations = relations(conversations, ({ one, many }) => ({
@@ -106,5 +127,12 @@ export const messagesRelations = relations(messages, ({ one }) => ({
   conversation: one(conversations, {
     fields: [messages.conversationId],
     references: [conversations.id],
+  }),
+}));
+
+export const proposalsRelations = relations(proposals, ({ one }) => ({
+  lead: one(leads, {
+    fields: [proposals.leadId],
+    references: [leads.id],
   }),
 }));

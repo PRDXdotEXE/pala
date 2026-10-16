@@ -1,12 +1,23 @@
-import type { AiGenerateOptions, AiHealthStatus, AiProvider } from './provider';
+import {
+  AiTimeoutError,
+  AiUnavailableError,
+  type AiGenerateOptions,
+  type AiHealthStatus,
+  type AiProvider,
+} from './provider';
 
 interface OllamaGenerateBody {
   model: string;
   prompt: string;
   system?: string;
   stream: false;
-  options?: { temperature?: number };
-  format?: 'json';
+  options?: {
+    temperature?: number;
+    seed?: number;
+    num_ctx?: number;
+    num_predict?: number;
+  };
+  format?: 'json' | object;
 }
 
 interface OllamaGenerateResponse {
@@ -54,27 +65,42 @@ export class OllamaProvider implements AiProvider {
   }
 
   async generate(prompt: string, options: AiGenerateOptions = {}): Promise<string> {
+    const ollamaOptions: OllamaGenerateBody['options'] = {};
+    if (options.temperature !== undefined) ollamaOptions.temperature = options.temperature;
+    if (options.seed !== undefined) ollamaOptions.seed = options.seed;
+    if (options.numCtx !== undefined) ollamaOptions.num_ctx = options.numCtx;
+    if (options.numPredict !== undefined) ollamaOptions.num_predict = options.numPredict;
+
     const body: OllamaGenerateBody = {
       model: this.model,
       prompt,
       stream: false,
       ...(options.system ? { system: options.system } : {}),
-      ...(options.temperature !== undefined
-        ? { options: { temperature: options.temperature } }
+      ...(Object.keys(ollamaOptions).length > 0 ? { options: ollamaOptions } : {}),
+      ...(options.format === 'json' || typeof options.format === 'object'
+        ? { format: options.format }
         : {}),
-      ...(options.format === 'json' ? { format: 'json' as const } : {}),
     };
 
-    const res = await fetch(`${this.host}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(120_000),
-    });
+    let res: Response;
+    try {
+      res = await fetch(`${this.host}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(120_000),
+      });
+    } catch (err) {
+      if (err instanceof DOMException && (err.name === 'TimeoutError' || err.name === 'AbortError')) {
+        throw new AiTimeoutError('Ollama generate timed out after 120s', err.message);
+      }
+      const detail = err instanceof Error ? err.message : String(err);
+      throw new AiUnavailableError('Ollama unreachable', detail);
+    }
 
     if (!res.ok) {
       const text = await res.text();
-      throw new Error(`Ollama generate failed (${res.status}): ${text}`);
+      throw new AiUnavailableError(`Ollama generate failed (${res.status})`, text);
     }
 
     const data = (await res.json()) as OllamaGenerateResponse;

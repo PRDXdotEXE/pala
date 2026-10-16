@@ -12,6 +12,63 @@ function leadId(req: Request): string {
   return parseUuidOr404(typeof raw === 'string' ? raw : '', 'Lead not found');
 }
 
+function conversationId(req: Request): string {
+  const raw = req.params.id;
+  return parseUuidOr404(
+    typeof raw === 'string' ? raw : '',
+    'Conversation not found',
+  );
+}
+
+export async function create(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const conversation = await conversationService.createConversation(
+      userId(req),
+      leadId(req),
+    );
+    res.status(201).json({ conversation });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function listMessages(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const messages = await conversationService.getConversationMessages(
+      userId(req),
+      conversationId(req),
+    );
+    res.json({ messages });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function addMessage(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const message = await conversationService.addMessageToConversation(
+      userId(req),
+      conversationId(req),
+      req.body,
+    );
+    res.status(201).json({ message });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function list(
   req: Request,
   res: Response,

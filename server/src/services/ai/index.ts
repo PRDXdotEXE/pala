@@ -1,6 +1,6 @@
-import { env } from '../config/env';
+import { env } from '../../config/env';
 import type { AiProvider } from './provider';
-import { OllamaProvider } from './ollama';
+import { OllamaProvider } from './ollama.provider';
 
 export function createAiProvider(): AiProvider {
   switch (env.AI_PROVIDER) {
@@ -14,3 +14,7 @@ export function createAiProvider(): AiProvider {
 }
 
 export type { AiProvider, AiGenerateOptions, AiHealthStatus } from './provider';
+export { OllamaProvider } from './ollama.provider';
+export { analyzeConversation, parseLeadExtraction } from './ai.service';
+export { leadExtractionSchema } from './schemas/lead-extraction';
+export type { LeadExtraction } from './schemas/lead-extraction';

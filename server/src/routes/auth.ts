@@ -12,3 +12,4 @@ export function createAuthRouter(): Router {
   router.get('/me', requireAuth, authController.me);
   return router;
 }
+

@@ -1,5 +1,5 @@
 import { pool } from '../db/client';
-import type { AiProvider } from '../ai/provider';
+import type { AiProvider } from './ai/provider';
 
 export interface HealthStatus {
   status: 'ok';

@@ -2,7 +2,7 @@ import { inArray } from 'drizzle-orm';
 import request from 'supertest';
 import { afterAll, describe, expect, it } from 'vitest';
 import { createApp } from '../src/app';
-import { createAiProvider } from '../src/ai';
+import { createAiProvider } from '../src/services/ai';
 import { db, pool } from '../src/db/client';
 import { users } from '../src/db/schema';
 

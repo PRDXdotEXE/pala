@@ -4,6 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Private AI Lead Assistant</title>
+    <script>
+      // Runs before first paint. Module scripts are deferred, so doing this in
+      // main.tsx would flash the wrong theme for a frame on first load.
+      (function () {
+        try {
+          var stored = localStorage.getItem('plas-theme');
+          var dark = stored
+            ? stored === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {
+          /* storage or matchMedia unavailable — keep light */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
